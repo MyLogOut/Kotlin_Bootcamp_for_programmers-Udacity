@@ -1,0 +1,1 @@
+fun main(args: Array<String>):Unit = println("Good ${if(args[1].toInt()<12) "Morning" else "Night"} ${args[0]}")
