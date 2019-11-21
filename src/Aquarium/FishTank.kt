@@ -99,4 +99,19 @@ class FishTank(
         } else return 0.0F
 
     }
+    fun details() {
+        println(
+            "Showing the details for the Aquarium: ${this.name}.\n" +
+                    "Width: ${this.width} .\n" +
+                    "Length: ${this.length} .\n" +
+                    "Depth: ${this.depth} .\n" +
+                    "Measure unit: ${this.measureUnit} .\n" +
+                    "Material type: ${this.materialType} .\n" +
+                    "Form type: ${this.formType} .\n" +
+                    "Water filled: ${this.waterFilled} .\n" +
+                    "Cubic fish capacity: ${this.cubicFishCapacity} .\n" +
+                    "Fish space left: ${this.fishSpace} .\n" +
+                    "Has decorations?: ${this.hasDecorations} .\n"
+        )
+    }
 }

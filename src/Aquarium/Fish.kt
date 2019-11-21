@@ -27,4 +27,19 @@ class Fish(
 
         return (fishVolume)
     }
+    fun details() {
+        println(
+            "Showing the details for the Fishtank: ${this.name}.\n" +
+                    "Width: ${this.colours} .\n" +
+                    "Length: ${this.width} .\n" +
+                    "Depth: ${this.length} .\n" +
+                    "Measure unit: ${this.girth} .\n" +
+                    "Material type: ${this.measureUnit} .\n" +
+                    "Form type: ${this.Type} .\n" +
+                    "Water filled: ${this.currentAquarium} .\n" +
+                    "Cubic fish capacity: ${this.weight} .\n" +
+                    "Fish space left: ${this.volume} .\n"
+        )
+    }
+
 }
