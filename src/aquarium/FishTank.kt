@@ -1,12 +1,15 @@
-package Aquarium
+package aquarium
+
+import java.util.concurrent.CompletableFuture.anyOf
 
 class FishTank(
     var name: String? = "No specified",
+    var formType: Map<String,Int>? = mapOf("Rectangular" to 4),
     var width: Float? = 0.0F,
     var length: Float? = 0.0F,
     var depth: Float? = 0.0F,
     var materialType: String? = "Glass",
-    var formType: String? = "Rectangular",
+    var hasCustomMeasures: Boolean? = null,
     var hasDecorations: Boolean? = true,
     val measureUnit: String? = "cm"
 
@@ -33,7 +36,7 @@ class FishTank(
     }
 
     fun getFishTankFormType(): String? {
-        return this.formType
+        return this.formType!!.entries.toString()
     }
 
     fun getFishTankWidth(): Float? {
@@ -94,7 +97,12 @@ class FishTank(
             this.length!!.compareTo(0.0F) != 0.or(-1) ||
             this.depth!!.compareTo(0.0F) != 0.or(-1)
         ) {
-            return (width!!.times(length!!).times(depth!!))
+            when (this.formType!!.values.first()) {
+                3 -> return
+                4 -> return (width!!.times(length!!).times(depth!!))
+                5 -> return ((1/2*5*))
+            }
+
             TODO("Calcular la media del tamaño de los peces que hayan actualmente")
         } else return 0.0F
 
@@ -110,7 +118,7 @@ class FishTank(
                     "Form type: ${this.formType} .\n" +
                     "Water filled: ${this.waterFilled} .\n" +
                     "Cubic fish capacity: ${this.cubicFishCapacity} .\n" +
-                    "Fish space left: ${this.fishSpace} .\n" +
+                    "Fish space filled: ${this.fishSpace} .\n" +
                     "Has decorations?: ${this.hasDecorations} .\n"
         )
     }

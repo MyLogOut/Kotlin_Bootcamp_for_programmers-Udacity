@@ -1,4 +1,4 @@
-package Aquarium
+package aquarium
 
 import kotlin.math.pow
 
