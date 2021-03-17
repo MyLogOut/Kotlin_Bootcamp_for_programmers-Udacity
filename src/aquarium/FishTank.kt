@@ -98,9 +98,9 @@ class FishTank(
             this.depth!!.compareTo(0.0F) != 0.or(-1)
         ) {
             when (this.formType!!.values.first()) {
-                3 -> return
+                3 -> return 1F
                 4 -> return (width!!.times(length!!).times(depth!!))
-                5 -> return ((1/2*5*))
+                5 -> return ((1/2*5).toFloat())
             }
 
             TODO("Calcular la media del tamaño de los peces que hayan actualmente")

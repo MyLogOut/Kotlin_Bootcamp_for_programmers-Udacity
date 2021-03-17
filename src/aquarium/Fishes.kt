@@ -2,16 +2,16 @@ package aquarium
 
 import java.lang.NumberFormatException
 import kotlin.Exception
-import kotlin.math.nextTowards
 import kotlin.math.sqrt
 import kotlin.math.tan
 import kotlin.random.Random
 
 var myAquarium: MutableList<FishTank?>? = mutableListOf()
-var myFish: MutableList<Fish?>? = mutableListOf()
+lateinit var myFish: MutableList<Fish?>
+lateinit var formType: Map<String, Int>
 
 fun main(args: Array<String>) {
-    println("Hello, ${args[0]}!")
+    println("Hello, rob32!")
     val flag = 0
     do {
         when (navigationMenu(0)) {
@@ -20,14 +20,30 @@ fun main(args: Array<String>) {
                 1 -> myAquarium = insertingAquarium(myAquarium)
                 2 -> showElements(myAquarium, null, false)
                 3 -> writeAquarium(myAquarium, showElements(myAquarium, null, true))
-                4 -> return
+                4 -> break
 
             }
             2 -> when (navigationMenu(2)) {//Enters to FishNavMenu
-                1 -> myFish = insertingFish(myFish, myAquarium)
+                1 -> {
+                    val newFish = insertingFish(myFish, myAquarium) ?: Pair(myFish.size -1 , Fish())
+                    myFish.add(newFish.first, newFish.second)
+                }
                 2 -> showElements(myAquarium, null, false)
-                3 -> fitMoreFish(showElements(null, myFish, true), true)
-                4 -> return
+                3 -> {
+                    fitMoreFish(
+                        if (showElements(
+                            null,
+                            if (::myFish.isInitialized) {
+                                println(::myFish.isInitialized)
+                                myFish
+                            } else emptyList<Fish>().toMutableList(), true
+                        ) == null) insertingAquarium(myAquarium)!!.lastIndex else myAquarium?.lastIndex
+
+                        ,
+                        true
+                    )
+                }
+                4 -> break
             }
             3 -> feedTheFish()
             4 -> {
@@ -75,8 +91,9 @@ fun navigationMenu(menu: Int): Int {
 }
 
 fun writeAquarium(aquariumList: MutableList<FishTank?>?, id: Int?): FishTank? {
+
     val aquariumElements = listOf(
-        "name", "formType", "width", "length",
+        "name", "width", "length",
         "depth", "materialType", "true or false answer if it contains decorations"
     )
 
@@ -87,24 +104,13 @@ fun writeAquarium(aquariumList: MutableList<FishTank?>?, id: Int?): FishTank? {
         println("Define the//an aquarium ${aquariumElements[elements]}: ")
         try {
             when (elements) {
-                2 -> {
-                    do {
-                        val formSpecs = formData(readLine().toString())
-                            when (formSpecs.values.first()) {
-                            in 0..2 -> println("Please insert a valid polygon value i.e(Id Est): \nRectangular or 4, Pentagonal or 5 and so on from 3 up to 10 angles or sides")
-                            in 3..10 -> aquariumValues[aquariumElements[elements]] = formSpecs
-                            else -> println("Please define a polygon value between the supported range (from 3 sides up to 10).")
-                        }
-                    } while (aquariumValues[aquariumElements[5]] == 0)
-                }
                 in 3..4 -> {
                     if (aquariumElements[2].findAnyOf(arrayListOf("Rectangular","4"),0,true) != null){
-                        aquariumValues[aquariumElements[elements]] = readLine()
+                        formType = mapOf(readLine().toString() to elements)
                     } else aquariumValues[aquariumElements[elements]] = 0.0F
                 }
                 else -> { aquariumValues[aquariumElements[elements]] = readLine() }
             }
-
         } catch (e: Exception) {
             println(e)
             if (elements != 0) elements.minus(1)
@@ -114,19 +120,32 @@ fun writeAquarium(aquariumList: MutableList<FishTank?>?, id: Int?): FishTank? {
             // If not just break the catch
         }
     }
+    println("Define this Aquarium's shape: ")
+    do {
+        var formSpecs = formData(readLine().toString())
+        when (formSpecs.values.first()) {
+            in 0..2 -> {
+                println("Please insert a valid polygon value i.e(Id Est): \nRectangular or 4, Pentagonal or 5 and so on from 3 up to 10 angles or sides")
+                formSpecs = formData(readLine().toString())
+                formType = formSpecs
+            }
+            in 3..10 -> formType = formSpecs
+            else -> println("Please define a polygon value between the supported range (from 3 sides up to 10).")
+        }
+    } while (formSpecs.values.firstOrNull() ?: 11 > 10 || formSpecs.values.firstOrNull() ?: 0 <= 2)
     println("TEST PURPOSE\n"+
         "${aquariumValues["name"]}, " +
                 "${aquariumValues["length"]}, " +
                 "${aquariumValues["waterFilled"]}, " +
                 "${aquariumValues["width"]}, " +
-                "${aquariumValues["formType"]}, " +
+                "${if(::formType.isInitialized) formType else mapOf("Rectangular" to 4)}, " +
                 "${aquariumValues["materialType"]}" +
                 "${aquariumValues["true or false answer if it contains decorations"]}"
     )
     if (aquariumList == null) {
         return FishTank(
             aquariumValues["name"].toString(),
-            aquariumValues["formType"] as Map<String, Int>,
+            if(::formType.isInitialized) formType else mapOf("Rectangular" to 4),
             aquariumValues["width"].toString().toFloat(),
             aquariumValues["length"].toString().toFloat(),
             aquariumValues["depth"].toString().toFloat(),
@@ -142,7 +161,7 @@ fun writeAquarium(aquariumList: MutableList<FishTank?>?, id: Int?): FishTank? {
                     myAquarium!![elements]!!.length = aquariumValues["length"].toString().toFloat()
                     myAquarium!![elements]!!.depth = aquariumValues["depth"].toString().toFloat()
                     myAquarium!![elements]!!.materialType = aquariumValues["materialType"].toString()
-                    myAquarium!![elements]!!.formType = aquariumValues["formType"] as Map<String, Int>
+                    myAquarium!![elements]!!.formType = formType
                     myAquarium!![elements]!!.hasDecorations =
                         aquariumValues["true or false answer if it contains decorations"].toString().toBoolean()
                 }
@@ -159,9 +178,9 @@ fun insertingAquarium(aquariumList: MutableList<FishTank?>?): MutableList<FishTa
     //2 options: rewrite or update, chosen: update. Correction: 1 option: rewrite
     // If there are no aquariums then add a new one at index 0
     if (!myAquarium!!.any()) {
-        val firstAquarium: FishTank? = writeAquarium(null, null) as FishTank
+        val firstAquarium: FishTank = writeAquarium(null, null) ?: FishTank()
         println(
-            "${firstAquarium!!.name}, " +
+            "${firstAquarium.name}, " +
                     "${firstAquarium.length}, " +
                     "${firstAquarium.waterFilled}, " +
                     "${firstAquarium.width}, " +
@@ -183,7 +202,8 @@ fun insertingAquarium(aquariumList: MutableList<FishTank?>?): MutableList<FishTa
     return myAquarium
 }
 
-fun insertingFish(myFish: MutableList<Fish?>?, myAquarium: MutableList<FishTank?>?): MutableList<Fish?>? {
+fun insertingFish(myFish: MutableList<Fish?>?, myAquarium: MutableList<FishTank?>?): Pair<Int, Fish>? {
+    lateinit var newFishWithIndex: Pair<Int, Fish>
     if (myAquarium!!.isNotEmpty()) {
         if (myFish!!.isEmpty()) { //If there are no Fish already then add the new and first one.
             myFish.add(0, fitMoreFish(
@@ -195,25 +215,25 @@ fun insertingFish(myFish: MutableList<Fish?>?, myAquarium: MutableList<FishTank?
                 , false))
         } else {
             for (elements in 0 until myFish.size - 1) {
-                if (myFish.size.compareTo(elements) == 0) { //If size of actual directory it's > 0 and it quantity is equal to elements then add this new Fish.
-                    myFish.add(
+                if (myFish.size.compareTo(elements) == 0) { //If size of actual directory is > 0 and its quantity is equal to elements then add this new Fish.
+                    newFishWithIndex = Pair(
                         elements + 1, fitMoreFish(
                             run {
                                 println("Please specify in which Aquarium this fish is going to be:")
                                 val id: Int? = showElements(myAquarium, null, true)
                                 id
                             }
-                            , false)
+                            , false) ?: Fish()
                     )
                 }
             }
         }
-        return myFish
-    } else println("Looks like there aren't any aquariums yet, please add at least one in order to proceed.");return null
+        return newFishWithIndex
+    } else println("Looks like there aren't any aquariums yet, please add at least one in order to proceed."); return null
 }
 
 fun showElements(aquariumList: MutableList<FishTank?>?, fishList: MutableList<Fish?>?, indicator: Boolean?): Int? {
-    if (myAquarium!!.isNotEmpty()) {
+    if (myAquarium!!.isNotEmpty() && !fishList.isNullOrEmpty()) {
         println("\nProviding all the recorded Aquariums:")
         println("\nID       |       Aquarium Name\n")
         for (elements in aquariumList!!.indices) {
@@ -245,7 +265,7 @@ fun showElements(aquariumList: MutableList<FishTank?>?, fishList: MutableList<Fi
             println("${e}\nPlease insert an Integer number in order to find the Aquarium you're looking for.\n")
         }
 
-    } else if (myFish!!.isNotEmpty()) {
+    } else if (!fishList.isNullOrEmpty()) {
         println("\nProviding all the recorded Fish:")
         println("\nID       |       Aquarium Name\n")
         for (elements in fishList!!.indices) {
@@ -269,7 +289,10 @@ fun showElements(aquariumList: MutableList<FishTank?>?, fishList: MutableList<Fi
         } catch (e: IndexOutOfBoundsException) {
             println("${e}\nPlease insert an Integer number in order to find the Aquarium you're looking for.\n")
         }
-    } else println("It seems like something it's empty here,\n please check that you've created all the necessary to complete this task.");return null
+    } else {
+        println("It seems like something's empty here,\n you must meet all the requirements to achieve this task successfully, ${if (fishList?.isEmpty() == true) "since there are no fish at all." else ""}")
+    }
+        return null
 }
 
 fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
@@ -281,7 +304,7 @@ fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
             "girth" to Float, "measure unit" to String, "current aquarium" to String
         )
 
-        val fishColors = mutableMapOf<String, MutableList<String>>("colors" to mutableListOf())
+        val fishColors = mutableMapOf<String, MutableList<String>>("colours" to mutableListOf())
         //Elements = Keys of the Map
         for ((elements) in fishProperties) {
             println("Type the fish $elements: ")
@@ -294,10 +317,10 @@ fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
                             in 1..10 -> {
                                 println("Please type the color and press enter to insert the next one:")
                                 repeat(readLine().toString().toInt()) {
-                                    fishColors["colors"]!!.add(readLine().toString())
+                                    fishColors["colours"]!!.add(readLine().toString())
                                 }
                             }
-                            else -> println("This fish should not have more than 10 colors (Inserted: ${readLine().toString()})")
+                            else -> println("This fish should not have more than 10 colours (Inserted: ${readLine().toString()})")
                         }
                         continue
                     }
@@ -311,8 +334,8 @@ fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
 
         val newFish = Fish(
             fishProperties["name"].toString(),
-            colours = mutableListOf(fishColors["colours"]!![0]),
-            width = 0.51F, Type = "Gudgeon",
+            colours = mutableListOf(if (!fishColors["colours"].isNullOrEmpty()) fishColors["colours"]!![0] else "Not specified"),
+            width = 0.51F, type = "Gudgeon",
             currentAquarium = myAquarium!![id!!]!!.name.toString()
         )
 
@@ -323,7 +346,7 @@ fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
                 true
             ) != null
         ) {
-            myAquarium!![id]!!.run {
+            myAquarium!![id!!]!!.run {
                 addThisFish(newFish) // Registering the fish in the selected Aquarium
             }
         } else {
@@ -331,8 +354,8 @@ fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
                 addThisFish(newFish) // Registering the fish in the selected Aquarium
             }
         }
-        if (indicator == true && myFish != null) { //Indicates if this is an editing.
-            myFish!![id] = newFish
+        if (indicator == true) { //Indicates if this is an editing.
+            myFish[id!!] = newFish
             println("Fish successfully updated.\n")
         } else { //If not then just do the normal Fish addition.
             println(
@@ -352,6 +375,10 @@ fun feedTheFish() {
     val day = randomDay()
     val food = fishFood(day)
     println("Today is $day and the fish eat $food")
+    if (shouldChangeWater((day))) {
+        println("Change the water today")
+    }
+
 }
 
 
@@ -450,7 +477,7 @@ fun prismMath(form:Map<String,Int>, depth: Float, width: Float, length: Float): 
         else -> return null
     }
 
-
+    return mapOf("as" to 1f)
 
 }
 
@@ -543,8 +570,10 @@ fun pentagonArea(sidesMeasures: Map<Int, Float>): Float {
     val apothem: Float = regularPolygonApothem(sidesMeasures)
     return (1/2).times((((5).times(sidesMeasures.values.first()))*apothem))
 }
-fun hexagonArea(sidesMeasures: Map<Int, Float>): Float {
-    val sides = sidesMeasures.values.toList().listIterator()
+fun regularHexagonArea(sidesMeasures: Map<Int, Float>): Float? {
+    val sides = sidesMeasures.values.toList()
+    return if (sides.all { it == sides.first() }) return TODO("regularHexagonArea = Area of [ 6 triángulos equiláteros ]")
+    else null
 
 }
 fun regularPolygonApothem(sidesMeasure: Map<Int, Float>): Float {

@@ -1,5 +1,6 @@
 package aquarium
 
+import java.util.Collections.list
 import kotlin.math.pow
 
 class Fish(
@@ -9,9 +10,19 @@ class Fish(
     var length: Float? = 5.20F,
     var girth: Float? = width!!.times(6),
     var measureUnit: String? = "inches",
-    var Type: String? = "Trout",
+    var type: String? = "Trout",
     var currentAquarium: String? = "No specified"
 ) {
+    val properties = listOf(
+        ::name.name,
+        ::colours.name,
+        ::width.name,
+        ::length.name,
+        ::girth.name,
+        ::measureUnit.name,
+        ::type.name,
+        ::currentAquarium.name
+    )
     var weight: Float? = calculateFishWeight()
     var volume: Float? = calculateFishVolume()
     private fun calculateFishWeight() = (this.girth!!.pow(2).times(length!!)).div(800)
@@ -35,7 +46,7 @@ class Fish(
                     "Depth: ${this.length} .\n" +
                     "Measure unit: ${this.girth} .\n" +
                     "Material type: ${this.measureUnit} .\n" +
-                    "Form type: ${this.Type} .\n" +
+                    "Form type: ${this.type} .\n" +
                     "Water filled: ${this.currentAquarium} .\n" +
                     "Cubic fish capacity: ${this.weight} .\n" +
                     "Fish space left: ${this.volume} .\n"

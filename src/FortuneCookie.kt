@@ -8,9 +8,9 @@ fun main(args: Array<String>) {
 }
 
 fun getBirthDay(): Int{
-    print("Please enter your birthday: ")
-    val flag = readLine()
-    return if (flag!!.toIntOrNull() != null && flag!!.toIntOrNull()!! <= 100) flag!!.toInt() else 1
+    print("Enter your birthDay: ")
+    val birthDay: Int = readLine().toString().toIntOrNull() ?: 0
+    return if (birthDay <= 0 || birthDay > 99) 1 else birthDay
 }
 fun getFortuneCookie(birthDay: Int): String {
     val fortuneMessage = listOf(
@@ -23,7 +23,7 @@ fun getFortuneCookie(birthDay: Int): String {
         "Treasure your friends because they are your greatest fortune."
     )
     return when(birthDay){
-        in 28..31 -> fortuneMessage[2]
+        in 28..31 -> (fortuneMessage[2])
         in 1..6  -> fortuneMessage[6]
         else -> {println("Birthday rem ="+ birthDay.rem(fortuneMessage.size-1))
         fortuneMessage[
