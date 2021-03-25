@@ -1,9 +1,8 @@
 package aquarium
 
-import java.util.Collections.list
 import kotlin.math.pow
 
-class Fish(
+class Pescao(
     var name: String? = "No specified",
     var colours: MutableList<String?> = mutableListOf("Red","Black","White"),
     var width: Float? = 0.50F,

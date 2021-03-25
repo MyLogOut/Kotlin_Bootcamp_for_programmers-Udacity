@@ -7,7 +7,7 @@ import kotlin.math.tan
 import kotlin.random.Random
 
 var myAquarium: MutableList<FishTank?>? = mutableListOf()
-lateinit var myFish: MutableList<Fish?>
+lateinit var myPescaos: MutableList<Pescao?>
 lateinit var formType: Map<String, Int>
 
 fun main(args: Array<String>) {
@@ -25,18 +25,18 @@ fun main(args: Array<String>) {
             }
             2 -> when (navigationMenu(2)) {//Enters to FishNavMenu
                 1 -> {
-                    val newFish = insertingFish(myFish, myAquarium) ?: Pair(myFish.size -1 , Fish())
-                    myFish.add(newFish.first, newFish.second)
+                    val newFish = insertingFish(myPescaos, myAquarium) ?: Pair(myPescaos.size -1 , Pescao())
+                    myPescaos.add(newFish.first, newFish.second)
                 }
                 2 -> showElements(myAquarium, null, false)
                 3 -> {
                     fitMoreFish(
                         if (showElements(
                             null,
-                            if (::myFish.isInitialized) {
-                                println(::myFish.isInitialized)
-                                myFish
-                            } else emptyList<Fish>().toMutableList(), true
+                            if (::myPescaos.isInitialized) {
+                                println(::myPescaos.isInitialized)
+                                myPescaos
+                            } else emptyList<Pescao>().toMutableList(), true
                         ) == null) insertingAquarium(myAquarium)!!.lastIndex else myAquarium?.lastIndex
 
                         ,
@@ -45,7 +45,7 @@ fun main(args: Array<String>) {
                 }
                 4 -> break
             }
-            3 -> feedTheFish()
+            3 -> TODO()
             4 -> {
                 return
             }
@@ -202,11 +202,11 @@ fun insertingAquarium(aquariumList: MutableList<FishTank?>?): MutableList<FishTa
     return myAquarium
 }
 
-fun insertingFish(myFish: MutableList<Fish?>?, myAquarium: MutableList<FishTank?>?): Pair<Int, Fish>? {
-    lateinit var newFishWithIndex: Pair<Int, Fish>
+fun insertingFish(myPescaos: MutableList<Pescao?>?, myAquarium: MutableList<FishTank?>?): Pair<Int, Pescao>? {
+    lateinit var newPescaoWithIndex: Pair<Int, Pescao>
     if (myAquarium!!.isNotEmpty()) {
-        if (myFish!!.isEmpty()) { //If there are no Fish already then add the new and first one.
-            myFish.add(0, fitMoreFish(
+        if (myPescaos!!.isEmpty()) { //If there are no Fish already then add the new and first one.
+            myPescaos.add(0, fitMoreFish(
                 run {
                     println("Please specify in which Aquarium this fish is going to be:")
                     val id: Int? = showElements(myAquarium, null, true)
@@ -214,26 +214,26 @@ fun insertingFish(myFish: MutableList<Fish?>?, myAquarium: MutableList<FishTank?
                 }
                 , false))
         } else {
-            for (elements in 0 until myFish.size - 1) {
-                if (myFish.size.compareTo(elements) == 0) { //If size of actual directory is > 0 and its quantity is equal to elements then add this new Fish.
-                    newFishWithIndex = Pair(
+            for (elements in 0 until myPescaos.size - 1) {
+                if (myPescaos.size.compareTo(elements) == 0) { //If size of actual directory is > 0 and its quantity is equal to elements then add this new Fish.
+                    newPescaoWithIndex = Pair(
                         elements + 1, fitMoreFish(
                             run {
                                 println("Please specify in which Aquarium this fish is going to be:")
                                 val id: Int? = showElements(myAquarium, null, true)
                                 id
                             }
-                            , false) ?: Fish()
+                            , false) ?: Pescao()
                     )
                 }
             }
         }
-        return newFishWithIndex
+        return newPescaoWithIndex
     } else println("Looks like there aren't any aquariums yet, please add at least one in order to proceed."); return null
 }
 
-fun showElements(aquariumList: MutableList<FishTank?>?, fishList: MutableList<Fish?>?, indicator: Boolean?): Int? {
-    if (myAquarium!!.isNotEmpty() && !fishList.isNullOrEmpty()) {
+fun showElements(aquariumList: MutableList<FishTank?>?, pescaoList: MutableList<Pescao?>?, indicator: Boolean?): Int? {
+    if (myAquarium!!.isNotEmpty() && !pescaoList.isNullOrEmpty()) {
         println("\nProviding all the recorded Aquariums:")
         println("\nID       |       Aquarium Name\n")
         for (elements in aquariumList!!.indices) {
@@ -265,21 +265,21 @@ fun showElements(aquariumList: MutableList<FishTank?>?, fishList: MutableList<Fi
             println("${e}\nPlease insert an Integer number in order to find the Aquarium you're looking for.\n")
         }
 
-    } else if (!fishList.isNullOrEmpty()) {
+    } else if (!pescaoList.isNullOrEmpty()) {
         println("\nProviding all the recorded Fish:")
         println("\nID       |       Aquarium Name\n")
-        for (elements in fishList!!.indices) {
-            println("$elements        |       ${fishList[elements]!!.name}\n")
+        for (elements in pescaoList!!.indices) {
+            println("$elements        |       ${pescaoList[elements]!!.name}\n")
         }
         println("Insert the ID of the Fish that you want to expand")
         var id: String? //Already initialized as null
         do {
             id = readLine()
-        } while (id.toString().toInt() >= myFish!!.indices.first() && id.toString().toInt() <= myFish!!.indices.last())
+        } while (id.toString().toInt() >= myPescaos!!.indices.first() && id.toString().toInt() <= myPescaos!!.indices.last())
 
-        for (elements in fishList.indices) try {
+        for (elements in pescaoList.indices) try {
             if (id.run { toString().toInt() } == elements) {
-                fishList[elements]!!.details() //prints the whole details of this Fish
+                pescaoList[elements]!!.details() //prints the whole details of this Fish
 
                 println("\n\nWould you like to edit something of this Fish?")
                 if (readLine().toString().findAnyOf(arrayListOf("y", "yes", "ye", "yup", "yeah"), 0, true) != null) {
@@ -290,12 +290,12 @@ fun showElements(aquariumList: MutableList<FishTank?>?, fishList: MutableList<Fi
             println("${e}\nPlease insert an Integer number in order to find the Aquarium you're looking for.\n")
         }
     } else {
-        println("It seems like something's empty here,\n you must meet all the requirements to achieve this task successfully, ${if (fishList?.isEmpty() == true) "since there are no fish at all." else ""}")
+        println("It seems like something's empty here,\n you must meet all the requirements to achieve this task successfully, ${if (pescaoList?.isEmpty() == true) "since there are no fish at all." else ""}")
     }
         return null
 }
 
-fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
+fun fitMoreFish(id: Int?, indicator: Boolean?): Pescao? {
     if (myAquarium != null) {
         println("Please enter the corresponding values for this Fish:")
 
@@ -332,7 +332,7 @@ fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
             }
         }
 
-        val newFish = Fish(
+        val newFish = Pescao(
             fishProperties["name"].toString(),
             colours = mutableListOf(if (!fishColors["colours"].isNullOrEmpty()) fishColors["colours"]!![0] else "Not specified"),
             width = 0.51F, type = "Gudgeon",
@@ -355,7 +355,7 @@ fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
             }
         }
         if (indicator == true) { //Indicates if this is an editing.
-            myFish[id!!] = newFish
+            myPescaos[id!!] = newFish
             println("Fish successfully updated.\n")
         } else { //If not then just do the normal Fish addition.
             println(
@@ -371,15 +371,7 @@ fun fitMoreFish(id: Int?, indicator: Boolean?): Fish? {
     return null
 }
 
-fun feedTheFish() {
-    val day = randomDay()
-    val food = fishFood(day)
-    println("Today is $day and the fish eat $food")
-    if (shouldChangeWater((day))) {
-        println("Change the water today")
-    }
 
-}
 
 
 fun randomDay(): String {

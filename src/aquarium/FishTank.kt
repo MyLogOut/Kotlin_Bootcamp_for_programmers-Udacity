@@ -1,7 +1,5 @@
 package aquarium
 
-import java.util.concurrent.CompletableFuture.anyOf
-
 class FishTank(
     var name: String? = "No specified",
     var formType: Map<String,Int>? = mapOf("Rectangular" to 4),
@@ -15,7 +13,7 @@ class FishTank(
 
 ) {
     // The current amount of fish inside the aquarium
-    private var fishInside = arrayListOf<Fish>()
+    private var fishInside = arrayListOf<Pescao>()
     // The volume of the tank
     var cubicFishCapacity: Float? = calculateFishCapacity()
     /*Without Fish volume isn't possible to estimate the fishVolume - waterInTank
@@ -68,15 +66,15 @@ class FishTank(
         return fishInside
     }*/
 
-    fun addThisFish(fish: Fish?) {
-        if (fish!!.currentAquarium!!.compareTo("No specified") != 0) {
+    fun addThisFish(pescao: Pescao?) {
+        if (pescao!!.currentAquarium!!.compareTo("No specified") != 0) {
             if (fishSpace["width"]!! <= (this.width!!.plus(this.length!!)) && (
-                        fish!!.width!!.compareTo(this.width!!.times(0.8)) <= 0 &&
-                                fish.length!!.compareTo(this.length!!.times(0.8)) <= 0)
+                        pescao!!.width!!.compareTo(this.width!!.times(0.8)) <= 0 &&
+                                pescao.length!!.compareTo(this.length!!.times(0.8)) <= 0)
             ) {
-                this.fishInside.add(fish)
-                this.fishSpace["width"]!!.plus(fish.width!!)
-                this.fishSpace["length"]!!.plus(fish.length!!)
+                this.fishInside.add(pescao)
+                this.fishSpace["width"]!!.plus(pescao.width!!)
+                this.fishSpace["length"]!!.plus(pescao.length!!)
                 println("Fish added successfully")
             } else println("This Aquarium is full")
         } else return println("No Aquarium specified")

@@ -1,6 +1,5 @@
 package aquarium
 
-import java.text.DecimalFormat
 import kotlin.math.sqrt
 import kotlin.math.tan
 
